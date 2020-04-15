@@ -109,9 +109,11 @@ namespace TSP
 			{
 				population[i] = GetNewChromosomeFrom(points);
 			}
-
-			showTimerIndex = 0;
-			showTimer.Start();
+			if (checkBox1.Checked)
+			{
+				showTimerIndex = 0;
+				showTimer.Start();
+			}
 			//Thread.Sleep(population.Length * 150);
 
 			// start training
