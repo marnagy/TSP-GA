@@ -127,6 +127,7 @@
 			// 
 			// showTimer
 			// 
+			this.showTimer.Interval = 16;
 			this.showTimer.Tick += new System.EventHandler(this.timer1_Tick);
 			// 
 			// popIndexLabel

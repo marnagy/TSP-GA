@@ -107,7 +107,7 @@ namespace TSP
 
 			for (int i = 0; i < population.Length; i++)
 			{
-				population[i] = Shuffle(points);
+				population[i] = GetNewChromosomeFrom(points);
 			}
 
 			showTimerIndex = 0;
@@ -133,7 +133,7 @@ namespace TSP
 			pictureBox1.Refresh();
 		}
 
-		private Point[] Shuffle(Point[] points)
+		private Point[] GetNewChromosomeFrom(Point[] points)
 		{
 			Point[] res = new Point[points.Length];
 			for (int i = 0; i < points.Length; i++)
@@ -145,12 +145,12 @@ namespace TSP
 			Point temp;
 			int index;
 			int index2;
-			for (int i = 0; i < res.Length; i++)
+			for (int i = 0; i < res.Length * 2; i++)
 			{
 				//if (i > 0)
 				//{
-				index = rand.Next(0,res.Length - 1);
-				index2 = rand.Next(0,res.Length - 1);
+				index = rand.Next(0,res.Length);
+				index2 = rand.Next(0,res.Length);
 				temp = res[index2];
 				res[index2] = res[index];
 				res[index] = temp;
@@ -170,11 +170,13 @@ namespace TSP
 			{
 				ShowSolution(population[showTimerIndex], showTimerIndex);
 				popIndexLabel.Text = "Population index: " + (showTimerIndex + 1);
-				pictureBox1.Refresh();
 				showTimerIndex++;
 			}
 			else
 			{
+				ClearPictureBox();
+				pictureBox1.Refresh();
+				popIndexLabel.Text = "";
 				showTimer.Stop();
 			}
 		}
