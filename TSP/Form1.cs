@@ -24,6 +24,7 @@ namespace TSP
 		Pen bestLinePen = new Pen(Color.Green);
 		//Color bestColor = Color.Green;
 		int genCounter = 0;
+		int maxGen;
 		Point first;
 		Point[] points;
 		int pointWidth = 5;
@@ -33,8 +34,15 @@ namespace TSP
 		bool train = false;
 		Point[][] population;
 		int populationLengthMultiplier = 10;
-		int sleepAmount = 1000/60;
+		int sleepAmount = 100;
 		int showTimerIndex = 0;
+		List<Point[]> nextPopulation;
+		double[] fitnessVals;
+		int numberOfPoints;
+
+		Func<Point[], double> fitness;
+		double sum = 0;
+		double crossoverFactor = 3/5D;
 
 		public Form1()
 		{
@@ -50,6 +58,7 @@ namespace TSP
 			pictureBox1.Refresh();
 			generationsCounter.Text = "Generation: " + genCounter;
 			trainNum.Text = "Generations to train: " + trackBar1.Value;
+			maxGen = trackBar1.Value;
 			rand = new Random();
 		}
 		private void ClearPictureBox()
@@ -59,7 +68,6 @@ namespace TSP
 
 		private void loadButton_Click(object sender, EventArgs e)
 		{
-			int numberOfPoints;
 			if ( int.TryParse(textBox1.Text, out numberOfPoints) && numberOfPoints > 1)
 			{
 				first = NewRandPoint();
@@ -71,10 +79,34 @@ namespace TSP
 				}
 			}
 			MakePointRects();
+			
+			setFitnessFunction();
 
 			ClearPictureBox();
 			ShowPoints();
 			pictureBox1.Refresh();
+		}
+
+		private void setFitnessFunction()
+		{
+			Func<Point, Point, double> euclidDist = (p1,p2) =>
+			{
+				return Math.Sqrt((p1.X - p2.X)*(p1.X - p2.X) + (p1.Y - p2.Y)*(p1.Y - p2.Y));
+			};
+			fitness = (arr) =>
+			{
+				double res = 0;
+
+				res += euclidDist(first, arr[0]);
+				for (int i = 0; i < arr.Length - 1; i++)
+				{
+					res += euclidDist(arr[i], arr[i+1]);
+				}
+				res += euclidDist(first, arr[arr.Length - 1]);
+
+				sum += res;
+				return res;
+			};
 		}
 
 		private void MakePointRects()
@@ -112,11 +144,13 @@ namespace TSP
 			if (checkBox1.Checked)
 			{
 				showTimerIndex = 0;
-				showTimer.Start();
 			}
-			//Thread.Sleep(population.Length * 150);
+			else
+			{
+				showTimerIndex = -1;
+			}
 
-			// start training
+			showTimer.Start();
 		}
 
 		private void ShowSolution(Point[] sol, int index)
@@ -149,14 +183,11 @@ namespace TSP
 			int index2;
 			for (int i = 0; i < res.Length * 2; i++)
 			{
-				//if (i > 0)
-				//{
 				index = rand.Next(0,res.Length);
 				index2 = rand.Next(0,res.Length);
 				temp = res[index2];
 				res[index2] = res[index];
 				res[index] = temp;
-				//}
 			}
 			return res;
 		}
@@ -164,6 +195,7 @@ namespace TSP
 		private void trackBar1_Scroll(object sender, EventArgs e)
 		{
 			trainNum.Text = "Generations to train: " + trackBar1.Value;
+			maxGen = trackBar1.Value;
 		}
 
 		private void timer1_Tick(object sender, EventArgs e)
@@ -176,11 +208,111 @@ namespace TSP
 			}
 			else
 			{
-				ClearPictureBox();
-				pictureBox1.Refresh();
-				popIndexLabel.Text = "";
-				showTimer.Stop();
+				if (genCounter < maxGen)
+				{
+					generateNewGeneration();
+					genCounter++;
+					if (checkBox1.Checked)
+					{
+						showTimerIndex = 0;
+					}
+				}
+				else
+				{
+					ClearPictureBox();
+					pictureBox1.Refresh();
+					popIndexLabel.Text = "";
+					showTimer.Stop();
+				}
 			}
+		}
+
+		private void generateNewGeneration()
+		{
+			Point[][] currGen = population;
+			var nextPopulationFrom = new List<Point[]>();
+			nextPopulation = new List<Point[]>(currGen.Length);
+
+			sum = 0;
+			evaluatePopulation(currGen);
+			double randNum;
+			int choosingIndex;
+			for (int i = 0; i < currGen.Length; i++)
+			{
+				randNum = (int)Math.Round(sum * rand.NextDouble());
+				choosingIndex = -1;
+				while (randNum > 0)
+				{
+					randNum -= fitnessVals[choosingIndex];
+					choosingIndex++;
+				}
+				nextPopulation.Add(currGen[choosingIndex]);
+			}
+
+			AddCrossovers(amount: ,from: nextPopulationFrom, to: nextPopulation);
+			AddCrossoversWithMutation(from: nextPopulationFrom, to: nextPopulation);
+			AddNewRandom(amount: ,to: nextPopulation);
+		}
+
+		private void AddNewRandom(List<Point[]> to)
+		{
+			throw new NotImplementedException();
+		}
+
+		private void AddCrossoversWithMutation(List<Point[]> from, List<Point[]> to)
+		{
+			throw new NotImplementedException();
+		}
+
+		private void AddCrossovers(int amount, List<Point[]> from, List<Point[]> to)
+		{
+			uint upperBoundary = (uint)(population.Length * crossoverFactor);
+			for (int i = 0; i < upperBoundary; i++)
+			{
+				Point[] parent1 = from[rand.Next(from.Count)];
+				Point[] parent2 = from[rand.Next(from.Count)];
+
+				to.Add(CrossOver(parent1, parent2));
+			}
+		}
+
+		private Point[] CrossOver(Point[] parent1arr, Point[] parent2arr)
+		{
+			List<Point> newSolution = parent2arr.ToList();
+			List<Point> parent1 = parent1arr.ToList();
+
+			// CROSSOVER
+			// remove Points in range
+			Range range = Range.GetRangeIn(0, parent1arr.Length);
+
+			foreach (int index in range)
+			{
+				newSolution.RemoveAll((p) => range.Contains(parent1.IndexOf(p)));
+			}
+
+			foreach (int index in range)
+			{
+				newSolution.Add(parent1arr[index]);
+			}
+
+			return newSolution.ToArray();
+		}
+
+		private void evaluatePopulation(Point[][] gen)
+		{
+			Array.Sort(gen, (a,b) => {
+					return Math.Sign(fitness(a) - fitness(b));
+				});
+			fitnessVals = new double[gen.Length];
+			for (int i = 0; i < gen.Length; i++)
+			{
+				fitnessVals[i] = fitness(gen[i]);
+			}
+		}
+
+		private void clearBtn_Click(object sender, EventArgs e)
+		{
+
 		}
 	}
 }

@@ -40,6 +40,7 @@
 			this.showTimer = new System.Windows.Forms.Timer(this.components);
 			this.popIndexLabel = new System.Windows.Forms.Label();
 			this.checkBox1 = new System.Windows.Forms.CheckBox();
+			this.bestSolutionBtn = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
 			this.SuspendLayout();
@@ -128,7 +129,6 @@
 			// 
 			// showTimer
 			// 
-			this.showTimer.Interval = 16;
 			this.showTimer.Tick += new System.EventHandler(this.timer1_Tick);
 			// 
 			// popIndexLabel
@@ -150,11 +150,22 @@
 			this.checkBox1.Text = "Show";
 			this.checkBox1.UseVisualStyleBackColor = true;
 			// 
+			// bestSolutionBtn
+			// 
+			this.bestSolutionBtn.Location = new System.Drawing.Point(807, 292);
+			this.bestSolutionBtn.Name = "bestSolutionBtn";
+			this.bestSolutionBtn.Size = new System.Drawing.Size(220, 23);
+			this.bestSolutionBtn.TabIndex = 10;
+			this.bestSolutionBtn.Text = "Show best solution";
+			this.bestSolutionBtn.UseVisualStyleBackColor = true;
+			this.bestSolutionBtn.Click += new System.EventHandler(this.clearBtn_Click);
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(1130, 644);
+			this.Controls.Add(this.bestSolutionBtn);
 			this.Controls.Add(this.checkBox1);
 			this.Controls.Add(this.popIndexLabel);
 			this.Controls.Add(this.trainNum);
@@ -188,6 +199,7 @@
 		private System.Windows.Forms.Timer showTimer;
 		private System.Windows.Forms.Label popIndexLabel;
 		private System.Windows.Forms.CheckBox checkBox1;
+		private System.Windows.Forms.Button bestSolutionBtn;
 	}
 }
 
