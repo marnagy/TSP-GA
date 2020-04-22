@@ -111,10 +111,11 @@
 			// 
 			this.trackBar1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.trackBar1.Location = new System.Drawing.Point(807, 241);
-			this.trackBar1.Maximum = 300;
+			this.trackBar1.Maximum = 500;
 			this.trackBar1.Minimum = 20;
 			this.trackBar1.Name = "trackBar1";
 			this.trackBar1.Size = new System.Drawing.Size(220, 45);
+			this.trackBar1.SmallChange = 10;
 			this.trackBar1.TabIndex = 6;
 			this.trackBar1.Value = 20;
 			this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
@@ -129,6 +130,7 @@
 			// 
 			// showTimer
 			// 
+			this.showTimer.Interval = 20;
 			this.showTimer.Tick += new System.EventHandler(this.timer1_Tick);
 			// 
 			// popIndexLabel

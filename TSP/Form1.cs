@@ -42,7 +42,11 @@ namespace TSP
 
 		Func<Point[], double> fitness;
 		double sum = 0;
-		double crossoverFactor = 3/5D;
+		double crossoverFactor = 4/5D;
+		double mutationFactor = 1/5D;
+		int addedCrossovers = 0;
+		int addedMutations = 0;
+		int addedRandoms = 0;
 
 		public Form1()
 		{
@@ -134,6 +138,7 @@ namespace TSP
 
 		private void button1_Click(object sender, EventArgs e)
 		{
+			genCounter = 0;
 			train = true;
 			population = new Point[(points.Length + 1) * populationLengthMultiplier][];
 
@@ -212,6 +217,7 @@ namespace TSP
 				{
 					generateNewGeneration();
 					genCounter++;
+					generationsCounter.Text = "Generation: " + genCounter;
 					if (checkBox1.Checked)
 					{
 						showTimerIndex = 0;
@@ -219,8 +225,8 @@ namespace TSP
 				}
 				else
 				{
-					ClearPictureBox();
-					pictureBox1.Refresh();
+					//ClearPictureBox();
+					//pictureBox1.Refresh();
 					popIndexLabel.Text = "";
 					showTimer.Stop();
 				}
@@ -237,43 +243,89 @@ namespace TSP
 			evaluatePopulation(currGen);
 			double randNum;
 			int choosingIndex;
-			for (int i = 0; i < currGen.Length; i++)
+			for (int i = 0; i < currGen.Length * 2; i++)
 			{
 				randNum = (int)Math.Round(sum * rand.NextDouble());
-				choosingIndex = -1;
-				while (randNum > 0)
+				for (int j = 0; j < currGen.Length; j++)
 				{
-					randNum -= fitnessVals[choosingIndex];
-					choosingIndex++;
+					randNum -= fitnessVals[j];
+					if (randNum < 0)
+					{
+						nextPopulationFrom.Add(currGen[j]);
+						break;
+					}
 				}
-				nextPopulation.Add(currGen[choosingIndex]);
+				//while (randNum > 0)
+				//{
+				//	randNum -= fitnessVals[choosingIndex];
+				//	choosingIndex++;
+				//}
+				//nextPopulation.Add(currGen[choosingIndex]);
 			}
 
-			AddCrossovers(amount: ,from: nextPopulationFrom, to: nextPopulation);
-			AddCrossoversWithMutation(from: nextPopulationFrom, to: nextPopulation);
-			AddNewRandom(amount: ,to: nextPopulation);
+			AddCrossovers(amount: (int)(population.Length * crossoverFactor),from: nextPopulationFrom, to: nextPopulation);
+			AddCrossoversWithMutation(amount: (int)(population.Length * mutationFactor), updGen: nextPopulation);
+			AddNewRandom(to: nextPopulation);
+			population = nextPopulation.ToArray();
 		}
 
-		private void AddNewRandom(List<Point[]> to)
+		private void AddNewRandom(List<Point[]> to, int amount = 0)
 		{
-			throw new NotImplementedException();
+			if (amount == 0)
+			{
+				amount = population.Length - addedCrossovers;
+			}
+			for (int i = 0; i < amount; i++)
+			{
+				to.Add(GetNewChromosomeFrom(points));
+			}
+			addedRandoms = amount;
 		}
 
-		private void AddCrossoversWithMutation(List<Point[]> from, List<Point[]> to)
+		private void AddCrossoversWithMutation(int amount, List<Point[]> updGen)
 		{
-			throw new NotImplementedException();
+			List<int> chosen = new List<int>(amount);
+			int chosenOne;
+			for (int i = 0; i < amount; i++)
+			{
+				chosenOne = rand.Next(updGen.Count);
+				while (chosen.Contains(chosenOne))
+				{
+					chosenOne = rand.Next(updGen.Count);
+				}
+				updGen[chosenOne] = Mutate(updGen[chosenOne]);
+				chosen.Add(chosenOne);
+			}
+			addedMutations = amount;
+		}
+
+		private Point[] Mutate(Point[] point)
+		{
+			int gene1 = rand.Next(point.Length);
+			int gene2 = rand.Next(point.Length);
+			while (gene1 == gene2)
+			{
+				gene2 = rand.Next(point.Length);
+			}
+			Point temp;
+
+			temp = point[gene1];
+			point[gene1] = point[gene2];
+			point[gene2] = temp;
+
+			return point;
 		}
 
 		private void AddCrossovers(int amount, List<Point[]> from, List<Point[]> to)
 		{
-			uint upperBoundary = (uint)(population.Length * crossoverFactor);
-			for (int i = 0; i < upperBoundary; i++)
+			for (int i = 0; i < amount; i++)
 			{
 				Point[] parent1 = from[rand.Next(from.Count)];
 				Point[] parent2 = from[rand.Next(from.Count)];
 
 				to.Add(CrossOver(parent1, parent2));
 			}
+			addedCrossovers = amount;
 		}
 
 		private Point[] CrossOver(Point[] parent1arr, Point[] parent2arr)
@@ -301,7 +353,7 @@ namespace TSP
 		private void evaluatePopulation(Point[][] gen)
 		{
 			Array.Sort(gen, (a,b) => {
-					return Math.Sign(fitness(a) - fitness(b));
+					return Math.Sign(fitness(b) - fitness(a));
 				});
 			fitnessVals = new double[gen.Length];
 			for (int i = 0; i < gen.Length; i++)
@@ -313,6 +365,8 @@ namespace TSP
 		private void clearBtn_Click(object sender, EventArgs e)
 		{
 
+			Array.Sort(population, (a,b) => Math.Sign(fitness(b) - fitness(a) ) );
+			ShowSolution(population[population.Length - 1], -1);
 		}
 	}
 }
