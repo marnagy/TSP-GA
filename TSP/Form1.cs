@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace TSP
 		Brush bgBrush = new SolidBrush(Color.Black);
 		Brush pointBrush = new SolidBrush(Color.White);
 		Brush stringBrush = new SolidBrush(Color.Red);
-		Pen linePen = new Pen(Color.Blue);
+		Pen linePen = new Pen(Color.Blue, 2f);
 		//Color lineColor = Color.Blue;
 		Pen bestLinePen = new Pen(Color.Green);
 		//Color bestColor = Color.Green;
@@ -49,9 +50,11 @@ namespace TSP
 		int addedCrossovers = 0;
 		int addedMutations = 0;
 		int addedRandoms = 0;
-		double mutationProb = 0.01;
-		double badSolutionProb = 0.005;
+		double mutationProb = 0.02;
+		double badSolutionProb = 0.001;
 		int crossoverNumber;
+		int bestConst = 5;
+		int newRandNum = 5;
 
 		public Form1()
 		{
@@ -98,20 +101,21 @@ namespace TSP
 
 		private void setFitnessFunction()
 		{
-			Func<Point, Point, double> euclidDist = (p1,p2) =>
+			Func<Point, Point, double> dist = (p1,p2) =>
 			{
 				return Math.Sqrt((p1.X - p2.X)*(p1.X - p2.X) + (p1.Y - p2.Y)*(p1.Y - p2.Y));
+				//return Math.Abs(p1.X - p2.X) + Math.Abs(p1.Y - p2.Y);
 			};
 			fitness = (arr) =>
 			{
 				double res = 0;
 
-				res += euclidDist(first, arr[0]);
+				res += dist(first, arr[0]);
 				for (int i = 0; i < arr.Length - 1; i++)
 				{
-					res += euclidDist(arr[i], arr[i+1]);
+					res += dist(arr[i], arr[i+1]);
 				}
-				res += euclidDist(first, arr[arr.Length - 1]);
+				res += dist(first, arr[arr.Length - 1]);
 
 				//made for better solution has higher fitness
 				res = 1/res;
@@ -154,6 +158,7 @@ namespace TSP
 			bestSolution = double.MaxValue;
 			train = true;
 			population = new Point[populationSize][];
+			rand = new Random( rand.Next(int.MinValue, int.MaxValue) );
 
 			for (int i = 0; i < population.Length; i++)
 			{
@@ -200,7 +205,7 @@ namespace TSP
 			Point temp;
 			int index;
 			int index2;
-			for (int i = 0; i < res.Length * 2; i++)
+			for (int i = 0; i < res.Length; i++)
 			{
 				index = rand.Next(0,res.Length);
 				index2 = rand.Next(0,res.Length);
@@ -270,11 +275,19 @@ namespace TSP
 			// add to next population from
 
 			//AddCrossovers(amount: (int)(population.Length * crossoverFactor),from: nextPopulationFrom, to: nextPopulation);
-			nextPopulation.Add(currGen[populationSize-1]);
-			AddCrossovers(amount: population.Length - 1,from: nextPopulationFrom, to: nextPopulation);
+			AddBest(amount: bestConst, from: currGen, to: nextPopulation);
+			AddCrossovers(amount: population.Length - bestConst - newRandNum,from: nextPopulationFrom, to: nextPopulation);
 			AddCrossoversWithMutation(probability: mutationProb, updGen: nextPopulation);
-			//AddNewRandom(to: nextPopulation);
+			AddNewRandom(amount: newRandNum,to: nextPopulation);
 			population = nextPopulation.ToArray();
+		}
+
+		private void AddBest(int amount, IReadOnlyList<Point[]> from, List<Point[]> to)
+		{
+			for (int i = 0; i < amount; i++)
+			{
+				to.Add(from[from.Count - 1 - i]);
+			}
 		}
 
 		private void AddNewRandom(List<Point[]> to, int amount = 0)
@@ -360,10 +373,11 @@ namespace TSP
 			//Range range = Range.GetRangeIn(0, parent1arr.Length);
 			Range range = new Range(index1, index2);
 
-			foreach (int index in range)
-			{
-				newSolution.RemoveAll((p) => range.Contains(parent1.IndexOf(p)));
-			}
+			//foreach (int index in range)
+			//{
+			//	newSolution.Remove(parent1[index]);
+			//}
+			newSolution.RemoveAll((p) => range.Contains(parent1.IndexOf(p)));
 
 			foreach (int index in range)
 			{

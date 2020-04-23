@@ -112,7 +112,7 @@
 			// 
 			this.trackBar1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.trackBar1.Location = new System.Drawing.Point(807, 241);
-			this.trackBar1.Maximum = 500;
+			this.trackBar1.Maximum = 1000;
 			this.trackBar1.Minimum = 2;
 			this.trackBar1.Name = "trackBar1";
 			this.trackBar1.Size = new System.Drawing.Size(220, 45);
