@@ -41,6 +41,7 @@
 			this.popIndexLabel = new System.Windows.Forms.Label();
 			this.checkBox1 = new System.Windows.Forms.CheckBox();
 			this.bestSolutionBtn = new System.Windows.Forms.Button();
+			this.bestSolutionLabel = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
 			this.SuspendLayout();
@@ -83,9 +84,9 @@
 			this.generationsCounter.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
 			this.generationsCounter.Location = new System.Drawing.Point(803, 612);
 			this.generationsCounter.Name = "generationsCounter";
-			this.generationsCounter.Size = new System.Drawing.Size(51, 20);
+			this.generationsCounter.Size = new System.Drawing.Size(93, 20);
 			this.generationsCounter.TabIndex = 3;
-			this.generationsCounter.Text = "label2";
+			this.generationsCounter.Text = "genCounter";
 			// 
 			// loadButton
 			// 
@@ -112,7 +113,7 @@
 			this.trackBar1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.trackBar1.Location = new System.Drawing.Point(807, 241);
 			this.trackBar1.Maximum = 500;
-			this.trackBar1.Minimum = 20;
+			this.trackBar1.Minimum = 2;
 			this.trackBar1.Name = "trackBar1";
 			this.trackBar1.Size = new System.Drawing.Size(220, 45);
 			this.trackBar1.SmallChange = 10;
@@ -130,7 +131,7 @@
 			// 
 			// showTimer
 			// 
-			this.showTimer.Interval = 20;
+			this.showTimer.Interval = 25;
 			this.showTimer.Tick += new System.EventHandler(this.timer1_Tick);
 			// 
 			// popIndexLabel
@@ -162,11 +163,22 @@
 			this.bestSolutionBtn.UseVisualStyleBackColor = true;
 			this.bestSolutionBtn.Click += new System.EventHandler(this.clearBtn_Click);
 			// 
+			// bestSolutionLabel
+			// 
+			this.bestSolutionLabel.AutoSize = true;
+			this.bestSolutionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+			this.bestSolutionLabel.Location = new System.Drawing.Point(803, 592);
+			this.bestSolutionLabel.Name = "bestSolutionLabel";
+			this.bestSolutionLabel.Size = new System.Drawing.Size(137, 20);
+			this.bestSolutionLabel.TabIndex = 11;
+			this.bestSolutionLabel.Text = "bestSolutionLabel";
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(1130, 644);
+			this.Controls.Add(this.bestSolutionLabel);
 			this.Controls.Add(this.bestSolutionBtn);
 			this.Controls.Add(this.checkBox1);
 			this.Controls.Add(this.popIndexLabel);
@@ -202,6 +214,7 @@
 		private System.Windows.Forms.Label popIndexLabel;
 		private System.Windows.Forms.CheckBox checkBox1;
 		private System.Windows.Forms.Button bestSolutionBtn;
+		private System.Windows.Forms.Label bestSolutionLabel;
 	}
 }
 
