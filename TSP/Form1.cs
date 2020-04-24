@@ -55,6 +55,7 @@ namespace TSP
 		int crossoverNumber;
 		int bestConst = 5;
 		int newRandNum = 5;
+		int maxGenMultiplier = 100;
 
 		public Form1()
 		{
@@ -223,8 +224,8 @@ namespace TSP
 
 		private void UpdateMaxGenerations()
 		{
-			trainNum.Text = "Generations to train: " + trackBar1.Value * 10;
-			maxGen = trackBar1.Value * 10;
+			trainNum.Text = "Generations to train: " + trackBar1.Value * maxGenMultiplier;
+			maxGen = trackBar1.Value * maxGenMultiplier;
 		}
 
 		private void timer1_Tick(object sender, EventArgs e)
