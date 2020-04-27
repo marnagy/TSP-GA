@@ -131,7 +131,6 @@
 			// 
 			// showTimer
 			// 
-			this.showTimer.Interval = 25;
 			this.showTimer.Tick += new System.EventHandler(this.timer1_Tick);
 			// 
 			// popIndexLabel
@@ -169,9 +168,8 @@
 			this.bestSolutionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
 			this.bestSolutionLabel.Location = new System.Drawing.Point(803, 592);
 			this.bestSolutionLabel.Name = "bestSolutionLabel";
-			this.bestSolutionLabel.Size = new System.Drawing.Size(137, 20);
+			this.bestSolutionLabel.Size = new System.Drawing.Size(0, 20);
 			this.bestSolutionLabel.TabIndex = 11;
-			this.bestSolutionLabel.Text = "bestSolutionLabel";
 			// 
 			// Form1
 			// 

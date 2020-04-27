@@ -50,8 +50,8 @@ namespace TSP
 		int addedCrossovers = 0;
 		int addedMutations = 0;
 		int addedRandoms = 0;
-		double mutationProb = 0.02;
-		double badSolutionProb = 0.001;
+		double mutationProb = 0.001;
+		//double badSolutionProb = 0.001;
 		int crossoverNumber;
 		int bestConst = 5;
 		int newRandNum = 5;
@@ -105,7 +105,6 @@ namespace TSP
 			Func<Point, Point, double> dist = (p1,p2) =>
 			{
 				return Math.Sqrt((p1.X - p2.X)*(p1.X - p2.X) + (p1.Y - p2.Y)*(p1.Y - p2.Y));
-				//return Math.Abs(p1.X - p2.X) + Math.Abs(p1.Y - p2.Y);
 			};
 			fitness = (arr) =>
 			{
@@ -121,10 +120,10 @@ namespace TSP
 				//made for better solution has higher fitness
 				res = 1/res;
 
-				if (res < bestSolution)
-				{
-					bestSolution = res;
-				}
+				//if (res < bestSolution)
+				//{
+				//	bestSolution = res;
+				//}
 				return res;
 			};
 		}
@@ -235,7 +234,7 @@ namespace TSP
 				generateNewGeneration();
 				genCounter++;
 				if (checkBox1.Checked){
-					ShowSolution(population[populationSize - 1], fitnessValue: fitnessVals[populationSize - 1]);
+					ShowSolution(population[0], fitnessValue: fitnessVals[0]);
 				}
 				generationsCounter.Text = "Generation: " + genCounter;
 				if (checkBox1.Checked)
@@ -245,12 +244,9 @@ namespace TSP
 			}
 			else
 			{
-				//ClearPictureBox();
-				//pictureBox1.Refresh();
 				popIndexLabel.Text = "";
 				showTimer.Stop();
 			}
-			//}
 		}
 
 		private void generateNewGeneration()
@@ -264,10 +260,14 @@ namespace TSP
 			evaluatePopulation(currGen);
 			double randNum;
 			int choosingIndex;
+			bestSolution = fitnessVals.Max();
+
+			Point[] parent1 = currGen.Accept_Reject(bestSolution, ref rand, fitness);
+			Point[] parent2 = currGen.Accept_Reject(bestSolution, ref rand, fitness);
 
 			// add to next population from
 			AddBest(amount: bestConst, from: currGen, to: nextPopulation);
-			AddCrossovers(amount: population.Length - bestConst - newRandNum,from: nextPopulationFrom, to: nextPopulation);
+			AddCrossovers(amount: population.Length - bestConst - newRandNum,parent1, parent2, to: nextPopulation);
 			AddCrossoversWithMutation(probability: mutationProb, updGen: nextPopulation);
 			AddNewRandom(amount: newRandNum,to: nextPopulation);
 			population = nextPopulation.ToArray();
@@ -325,22 +325,22 @@ namespace TSP
 			return point;
 		}
 
-		private void AddCrossovers(int amount, IReadOnlyList<Point[]> from, List<Point[]> to)
+		private void AddCrossovers(int amount, Point[] parent1, Point[] parent2, List<Point[]> to)
 		{
 			for (int i = 0; i < amount; i++)
 			{
-				Point[] parent1 = from.Accept_Reject(bestSolution, ref rand, fitness);
-				Point[] parent2 = from.Accept_Reject(bestSolution, ref rand, fitness);
-				double middle = (fitness(parent1) + fitness(parent2)) / 2;
+				//Point[] parent1 = from.Accept_Reject(bestSolution, ref rand, fitness);
+				//Point[] parent2 = from.Accept_Reject(bestSolution, ref rand, fitness);
+				//double middle = (fitness(parent1) + fitness(parent2)) / 2;
 				Point[] newSol = CrossOver(parent1, parent2);
-				while (fitness(newSol) < middle)
-				{
-					if (badSolutionProb >= rand.NextDouble())
-					{
-						break;
-					}
-					newSol = CrossOver(parent1, parent2);
-				}
+				//while (fitness(newSol) < middle)
+				//{
+				//	if (badSolutionProb >= rand.NextDouble())
+				//	{
+				//		break;
+				//	}
+				//	newSol = CrossOver(parent1, parent2);
+				//}
 				to.Add(newSol);
 			}
 			addedCrossovers = amount;
@@ -353,12 +353,17 @@ namespace TSP
 
 			// CROSSOVER
 
-			int index1 = rand.Next(0, parent1arr.Length);
-			int index2 = index1 + crossoverNumber;
-			if (index2 > parent1arr.Length)
+			int index1 = rand.Next(parent1arr.Length);
+			int index2 = rand.Next(parent1arr.Length);
+			while (index1 == index2)
 			{
-				index2 = index1 - crossoverNumber;
+				index2 = rand.Next(parent1arr.Length);
 			}
+			//int index2 = index1 + crossoverNumber;
+			//if (index2 > parent1arr.Length)
+			//{
+			//	index2 = index1 - crossoverNumber;
+			//}
 
 			// remove Points in range
 			//Range range = Range.GetRangeIn(0, parent1arr.Length);
