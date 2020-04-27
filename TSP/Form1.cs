@@ -230,14 +230,6 @@ namespace TSP
 
 		private void timer1_Tick(object sender, EventArgs e)
 		{
-			//if (showTimerIndex >= 0 && showTimerIndex < population.Length)
-			//{
-			//	//ShowSolution(population[showTimerIndex], showTimerIndex);
-			//	//popIndexLabel.Text = "Population index: " + (showTimerIndex + 1);
-			//	showTimerIndex++;
-			//}
-			//else
-			//{
 			if (genCounter < maxGen)
 			{
 				generateNewGeneration();
@@ -274,8 +266,6 @@ namespace TSP
 			int choosingIndex;
 
 			// add to next population from
-
-			//AddCrossovers(amount: (int)(population.Length * crossoverFactor),from: nextPopulationFrom, to: nextPopulation);
 			AddBest(amount: bestConst, from: currGen, to: nextPopulation);
 			AddCrossovers(amount: population.Length - bestConst - newRandNum,from: nextPopulationFrom, to: nextPopulation);
 			AddCrossoversWithMutation(probability: mutationProb, updGen: nextPopulation);
